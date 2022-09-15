@@ -7,5 +7,5 @@ print(google_homepage.content)
 
 print("=======================================================================")
 
-python_script_file = requests.get("https://github.com/firasalchalabi/CMPUT404-Labs/blob/main/lab-1/lab1_script.py")
+python_script_file = requests.get("https://raw.githubusercontent.com/firasalchalabi/CMPUT404-Labs/main/lab-1/lab1_script.py")
 print(python_script_file.text)
