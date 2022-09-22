@@ -21,7 +21,7 @@ def get_remote_ip(host):
         print ('Hostname could not be resolved. Exiting')
         sys.exit()
 
-    print (f'Ip address of {host} is {remote_ip}')
+    print (f'IP address of {host} is {remote_ip}')
     return remote_ip
 
 #send data to server
@@ -67,6 +67,7 @@ def main():
     finally:
         #always close at the end!
         s.close()
+      
 if __name__ == "__main__":
     main()
 
