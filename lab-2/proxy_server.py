@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import socket
 import time
+from multiprocessing import Process
 
 #importing from client.py
 from client import create_tcp_socket, get_remote_ip, send_data
@@ -9,6 +10,25 @@ from client import create_tcp_socket, get_remote_ip, send_data
 HOST = ""
 PORT = 8001
 BUFFER_SIZE = 1024
+
+def recieve_and_forward_data(listening_connection, sending_socket):
+    payload = b""
+    while True:
+        data = listening_connection.recv(BUFFER_SIZE)
+        if not data:
+             break
+        payload += data
+    sending_socket.sendall(payload)
+    sending_socket.shutdown(socket.SHUT_WR)
+
+    full_data = b""
+    while True:
+        data = sending_socket.recv(BUFFER_SIZE)
+        if not data:
+             break
+        full_data += data
+    time.sleep(0.5)
+    listening_connection.sendall(full_data)
 
 def main():
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listening_socket:
@@ -33,23 +53,9 @@ def main():
             sending_socket = create_tcp_socket()
             sending_socket.connect((remote_host, remote_port))
             try:
-                payload = b""
-                while True:
-                    data = conn.recv(BUFFER_SIZE)
-                    if not data:
-                         break
-                    payload += data
-                sending_socket.sendall(payload)
-                sending_socket.shutdown(socket.SHUT_WR)
-
-                full_data = b""
-                while True:
-                    data = sending_socket.recv(BUFFER_SIZE)
-                    if not data:
-                         break
-                    full_data += data
-                time.sleep(0.5)
-                conn.sendall(full_data)
+                p = Process(target=recieve_and_forward_data, args=(conn, sending_socket))
+                p.daemon = True
+                p.start()
             except Exception as e:
                 print(e)
             finally:
