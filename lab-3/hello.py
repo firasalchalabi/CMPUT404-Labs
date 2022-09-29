@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-mport os
+import os
 import json
 import templates
 
